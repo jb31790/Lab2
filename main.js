@@ -20,13 +20,6 @@ function getCookie(cname) {
   return "";
 }
 
-function setView(view) {
-  setCookie("view", view, 100);
-}
-function getView() {
-  return getCookie("view");
-}
-
 function getQueryVariable(variable) {
   var query = window.location.search.substring(1);
   var vars = query.split("&");
@@ -49,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
       .addEventListener("submit", submitSignIn);
   }
 
-  if (window.location.pathname == "/quizPlayer.html") {
+  if (window.location.pathname.includes("/quizPlayer.html")) {
     let quizName = getQueryVariable("quiz");
     loadQuiz(quizName);
   }
