@@ -122,3 +122,7 @@ main {
 /* 	margin: 1em; */
 /* 	outline: none; */
 /* } */
+
+.badge {
+	scroll-margin: 10em;
+}

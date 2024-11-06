@@ -229,5 +229,59 @@ function loadQuiz(quizName) {
 
 function finishQuiz(event) {
   event.preventDefault();
-  alert("Finished Quiz");
+
+  let quizName = getQueryVariable("quiz");
+
+  fetch(`quizzes/quiz_${quizName}.json`)
+    .then((response) => response.json())
+    .then((data) => {
+      quiz = JSON.stringify(data);
+      quiz = data;
+
+      let quizResults = new Object();
+      let b = 0;
+      let requiredNotFound = true;
+
+      for (let i = 0; i < quiz["questions"].length; i++) {
+        let questionObject = quiz["questions"][i];
+        let qNum = i + 1;
+
+        let ans = [];
+
+        let quizAnswerNode = document.querySelectorAll(`[name="q${qNum}"]`);
+
+        for (let f = 0; f < quizAnswerNode.length; f++) {
+          let val = quizAnswerNode[f].value;
+
+          // console.log(quizAnswerNode[f]);
+          if (val == "on") {
+            if (quizAnswerNode[f].checked) {
+              val = f;
+            } else {
+              continue;
+            }
+          }
+          ans.push(val);
+        }
+
+        if (questionObject["mandatory"]) {
+          let badge = document.getElementsByClassName("badge")[b];
+          console.log(ans);
+          if (ans == "" || ans == []) {
+            badge.setAttribute("class", "badge text-bg-danger");
+
+            if (requiredNotFound) {
+              badge.scrollIntoView();
+              requiredNotFound = false;
+            }
+            // console.log(badge);
+          } else {
+            badge.setAttribute("class", "badge text-bg-info");
+            console.log(badge);
+          }
+          b++;
+        }
+        // console.log(ans);
+      }
+    });
 }
