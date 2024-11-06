@@ -104,7 +104,10 @@ function capitalize(s) {
 function loadQuiz(quizName) {
   let quiz;
 
-  fetch(`quizzes/quiz_${quizName}.json`)
+  const githubPages_hardcoded_path_fix = "Lab2/";
+  // const githubPages_hardcoded_path_fix = "";
+
+  fetch(`${githubPages_hardcoded_path_fix}quizzes/quiz_${quizName}.json`)
     .then((response) => response.json())
     .then((data) => {
       quiz = JSON.stringify(data);
