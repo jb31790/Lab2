@@ -223,5 +223,18 @@ function loadQuiz(quizName) {
 
         document.getElementById("quiz").appendChild(questionContainer);
       }
+
+      let finishBtn = document.createElement("button");
+      finishBtn.innerText = "Finish Quiz";
+      finishBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
+      finishBtn.setAttribute("id", "finishBtn");
+      finishBtn.addEventListener("click", finishQuiz);
+
+      document.getElementById("quiz").appendChild(finishBtn);
     });
+}
+
+function finishQuiz(event) {
+  event.preventDefault();
+  alert("Finished Quiz");
 }
