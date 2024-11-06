@@ -1,0 +1,64 @@
+{
+  "questions": [
+    {
+      "question": "What is the largest penguin species?",
+      "type": "single_choice",
+      "options": [
+        "Emperor Penguin",
+        "King Penguin",
+        "Adelie Penguin",
+        "Gentoo Penguin"
+      ],
+      "correct_answer": 0,
+      "mandatory": true
+    },
+    {
+      "question": "Where do penguins primarily live?",
+      "type": "single_choice",
+      "options": [
+        "Arctic",
+        "Antarctic",
+        "Tropical Rainforests",
+        "Deserts"
+      ],
+      "correct_answer": 1,
+      "mandatory": false
+    },
+    {
+      "question": "How do penguins keep warm in cold climates?",
+      "type": "multiple_choice",
+      "options": [
+        "Thick feathers",
+        "Blubber",
+        "Huddling together",
+        "Hibernation"
+      ],
+      "correct_answers": [0, 1, 2],
+      "mandatory": false
+    },
+    {
+      "question": "What do penguins primarily eat?",
+      "type": "single_choice",
+      "options": [
+        "Plants",
+        "Insects",
+        "Fish and Krill",
+        "Seaweed"
+      ],
+      "correct_answer": 2,
+      "mandatory": true
+    },
+    {
+      "question": "Name a penguin species that is known for its distinctive yellow head feathers.",
+      "type": "free_text",
+      "correct_answer": "Macaroni Penguin",
+      "mandatory": false
+    },
+    {
+      "question": "What is the name of the unique mating dance performed by some penguin species?",
+      "type": "free_text",
+      "correct_answer": "Penguin Parade",
+      "mandatory": true
+    }
+  ]
+}

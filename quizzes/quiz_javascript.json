@@ -1,0 +1,85 @@
+{
+  "questions": [
+    {
+      "question": "What is JavaScript?",
+      "type": "single_choice",
+      "options": [
+        "A programming language for creating web pages",
+        "A markup language for structuring web content",
+        "A style sheet language for designing web pages",
+        "A database language for storing web data"
+      ],
+      "correct_answer": 0,
+      "mandatory": false
+    },
+    {
+      "question": "Which of the following are valid ways to declare a variable in JavaScript? (Select all that apply)",
+      "type": "multiple_choice",
+      "options": [
+        "var",
+        "let",
+        "const",
+        "int"
+      ],
+      "correct_answers": [0, 1, 2],
+      "mandatory": true
+    },
+    {
+      "question": "What is the correct way to write a comment in JavaScript?",
+      "type": "single_choice",
+      "options": [
+        "// This is a comment",
+        "* * # This is a comment"
+      ],
+      "correct_answer": 0,
+      "mandatory": true
+    },
+    {
+      "question": "What is the result of the following expression: 5 + \"3\"?",
+      "type": "single_choice",
+      "options": [
+        "8",
+        "\"53\"",
+        "An error"
+      ],
+      "correct_answer": 1,
+      "mandatory": true
+    },
+    {
+      "question": "Write a JavaScript code snippet to print the message \"Hello, world!\" to the console.",
+      "type": "free_text",
+      "correct_answer": "console.log(\"Hello, world!\");",
+      "mandatory": true
+    },
+    {
+      "question": "What is the difference between == and === in JavaScript?",
+      "type": "free_text",
+      "correct_answer": "== checks for equality in value, while === checks for equality in both value and type.",
+      "mandatory": false
+    },
+    {
+      "question": "What is a function in JavaScript?",
+      "type": "free_text",
+      "correct_answer": "A function is a block of code that performs a specific task.",
+      "mandatory": true
+    },
+    {
+      "question": "How do you create an array in JavaScript?",
+      "type": "free_text",
+      "correct_answer": "let myArray = [1, 2, 3, 4, 5];",
+      "mandatory": false
+    },
+    {
+      "question": "What is the output of the following code:\n```javascript\nlet x = 10;\nlet y = 5;\nconsole.log(x % y);\n```",
+      "type": "free_text",
+      "correct_answer": "0",
+      "mandatory": false
+    },
+    {
+      "question": "What is the purpose of the `document.getElementById()` method in JavaScript?",
+      "type": "free_text",
+      "correct_answer": "It is used to get a reference to an HTML element by its ID.",
+      "mandatory": true
+    }
+  ]
+}

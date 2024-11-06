@@ -1,0 +1,58 @@
+{
+  "questions": [
+    {
+      "question": "What is the scientific name of the banana plant?",
+      "type": "single_choice",
+      "options": [
+        "Musa acuminata",
+        "Malus domestica",
+        "Solanum tuberosum",
+        "Theobroma cacao"
+      ],
+      "correct_answer": 0,
+      "mandatory": false
+    },
+    {
+      "question": "In which region did bananas likely originate?",
+      "type": "single_choice",
+      "options": [
+        "South America",
+        "Africa",
+        "Southeast Asia",
+        "Europe"
+      ],
+      "correct_answer": 2,
+      "mandatory": true
+    },
+    {
+      "question": "What is the main carbohydrate found in bananas?",
+      "type": "single_choice",
+      "options": [
+        "Starch",
+        "Sugar",
+        "Fiber",
+        "Protein"
+      ],
+      "correct_answer": 1,
+      "mandatory": true
+    },
+    {
+      "question": "What is the name of the yellow pigment found in bananas?",
+      "type": "free_text",
+      "correct_answer": "Carotene",
+      "mandatory": false
+    },
+    {
+      "question": "What is the term for a bunch of bananas?",
+      "type": "free_text",
+      "correct_answer": "Hand",
+      "mandatory": false
+    },
+    {
+      "question": "Name a popular banana variety known for its sweet flavor.",
+      "type": "free_text",
+      "correct_answer": "Cavendish",
+      "mandatory": true
+    }
+  ]
+}

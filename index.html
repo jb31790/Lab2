@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lab 2</title>
+	<link rel="stylesheet" href="style.css">
+	<script src="main.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div id="background"></div>
+	<div id="userMenu">
+		<h1 id="userInitials">JB</h1>
+	</div>
+	<dialog id="signin">
+		<div class="card-body">
+			<h5 class="card-title">Sign In</h5>
+			<h6 class="card-subtitle mb-2 text-muted">You need to sign in to take quizzes</h6>
+			<br>
+			<form class="container" id="signInForm">
+			    <div class="form-group row">
+					<div class="col-sm">
+						<label for="inputFirstname">Firstname:</label>
+						<input type="text" class="form-control" id="inputFirstname" aria-describedby="emailHelp" placeholder="Enter Firstname">
+					</div>
+					<br>
+					<div class="col-sm">
+						<label for="inputLastname">Lastname:</label>
+						<input type="text" class="form-control" id="inputLastname" placeholder="Enter Lastname">
+					</div>
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="inputEmail">Email address</label>
+					<input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+				</div>
+				<br>
+				<a class="btn btn-primary" id="submitSignIn">Submit</a>
+			<form>
+		</div>
+	</dialog>
+
+	<main id="main">
+		<div id="quizSelector">
+			<div id="title">
+				<h4 class="card-title">Quizzes</h4>
+				<h5 class="card-subtitle mb-2 text-muted">Choose your Quiz</h5>
+			</div>
+			<div id="content">
+				<div class="card" style="width: 18rem;">
+					<img class="card-img-top" src="https://cdn.pixabay.com/photo/2016/03/27/18/54/technology-1283624_1280.jpg" alt="Card image cap">
+					<div class="card-body">
+						<h5 class="card-title">Javascript</h5>
+						<p class="card-text">Test your javascript-knowledge in this wonderful quiz</p>
+						<a href="quizPlayer.html?quiz=javascript" class="btn btn-primary">Take Quiz</a>
+					</div>
+				</div>
+
+				<div class="card" style="width: 18rem;">
+					<img class="card-img-top" src="https://cdn.pixabay.com/photo/2017/01/03/11/25/banana-1949166_640.jpg" alt="Card image cap">
+					<div class="card-body">
+						<h5 class="card-title">Bananas</h5>
+						<p class="card-text">How much do you know about this yellow'n'yummy fruit?</p>
+						<a href="quizPlayer.html?quiz=banana" class="btn btn-primary">Take Quiz</a>
+					</div>
+				</div>
+
+				<div class="card" style="width: 18rem;">
+					<img class="card-img-top" src="https://cdn.pixabay.com/photo/2017/02/27/20/31/penguin-2104173_640.jpg" alt="Card image cap">
+					<div class="card-body">
+						<h5 class="card-title">Penguins</h5>
+						<p class="card-text"><em>They're cute, flightless birds. That's all I know...</em></p>
+						<a href="quizPlayer.html?quiz=penguins" class="btn btn-primary">Take Quiz</a>
+					</div>
+				</div>
+
+			</div>
+		</div>
+		<div id="quizContainer"></div>
+
+	</main>
+</body>
+</html>
