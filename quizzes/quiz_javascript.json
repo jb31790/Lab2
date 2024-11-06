@@ -21,7 +21,7 @@
         "const",
         "int"
       ],
-      "correct_answers": [0, 1, 2],
+      "correct_answer": [0, 1, 2],
       "mandatory": true
     },
     {
