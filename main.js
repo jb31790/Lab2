@@ -48,6 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     loadQuiz(quizName, showCorrect);
   }
+  if (window.location.pathname.includes("/index.html")) {
+    loadSelector();
+  }
 });
 
 function verifyFormField(field, regex, answer) {
@@ -294,7 +297,6 @@ function finishQuiz(event) {
         for (let f = 0; f < quizAnswerNode.length; f++) {
           let val = quizAnswerNode[f].value;
 
-          // console.log(quizAnswerNode[f]);
           if (val == "on") {
             if (quizAnswerNode[f].checked) {
               val = f;
@@ -354,16 +356,88 @@ function loadResults(resultsObj) {
   );
   let scorePercentage = Math.round((trueCount / questionCount) * 100);
 
-  console.log(resultsObj);
   results.showModal();
 
   let bar = document.getElementById("progressBar");
   bar.innerText = bar.style["width"] = scorePercentage + "%";
 
   document.getElementById("backToQuiz").addEventListener("click", hideResults);
+  document
+    .getElementById("showCorrect")
+    .addEventListener("click", showCorrectAnswers);
 }
 
 function hideResults(event) {
   event.preventDefault();
   results.close();
+}
+
+function showCorrectAnswers(event) {
+  event.preventDefault();
+  let quizName = getQueryVariable("quiz");
+  window.location.replace(
+    `quizPlayer.html?quiz=${quizName}&showCorrect=true#top`,
+  );
+}
+
+function loadSelector() {
+  let content = document.getElementById("content");
+
+  let presetQuizzes = [
+    {
+      name: "javascript",
+      description: "Test your javascript-knowledge in this wonderful quiz",
+      imgLink:
+        "https://cdn.pixabay.com/photo/2016/03/27/18/54/technology-1283624_1280.jpg",
+    },
+    {
+      name: "banana",
+      description: "How much do you know about this yellow'n'yummy fruit?",
+      imgLink:
+        "https://cdn.pixabay.com/photo/2017/01/03/11/25/banana-1949166_640.jpg",
+    },
+    {
+      name: "penguins",
+      description: "They're cute, flightless birds. That's all I know...",
+      imgLink:
+        "https://cdn.pixabay.com/photo/2017/02/27/20/31/penguin-2104173_640.jpg",
+    },
+  ];
+
+  for (let i = 0; i < presetQuizzes.length; i++) {
+    let card = document.createElement("div");
+    card.setAttribute("class", "card");
+    card.style["width"] = "18rem";
+
+    let img = document.createElement("img");
+    let imgLink = presetQuizzes[i]["imgLink"];
+    img.setAttribute("src", imgLink);
+    img.setAttribute("class", "card-img-top");
+    card.appendChild(img);
+
+    let body = document.createElement("div");
+    body.setAttribute("class", "card-body");
+
+    let title = document.createElement("h5");
+    title.setAttribute("class", "card-title");
+    title.innerText = capitalize(presetQuizzes[i]["name"]);
+    body.appendChild(title);
+
+    let p = document.createElement("p");
+    p.setAttribute("class", "card-text");
+    p.innerText = capitalize(presetQuizzes[i]["description"]);
+    body.appendChild(p);
+
+    let btn = document.createElement("a");
+    btn.setAttribute("class", "btn btn-primary");
+    btn.setAttribute(
+      "href",
+      `quizPlayer.html?quiz=${presetQuizzes[i]["name"]}`,
+    );
+    btn.innerText = "Take Quiz";
+    body.appendChild(btn);
+
+    card.appendChild(body);
+    content.appendChild(card);
+  }
 }
