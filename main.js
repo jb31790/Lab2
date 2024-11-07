@@ -44,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
   if (window.location.pathname.includes("/quizPlayer.html")) {
     let quizName = getQueryVariable("quiz");
-    loadQuiz(quizName);
+    let showCorrect = getQueryVariable("showCorrect");
+
+    loadQuiz(quizName, showCorrect);
   }
 });
 
@@ -101,8 +103,14 @@ function capitalize(s) {
   return String(s[0]).toUpperCase() + String(s).slice(1);
 }
 
-function loadQuiz(quizName) {
+function loadQuiz(quizName, showCorrect) {
   let quiz;
+
+  if (showCorrect == "true") {
+    showCorrect = true;
+  } else {
+    showCorrect = false;
+  }
 
   fetch(`quizzes/quiz_${quizName}.json`)
     .then((response) => response.json())
@@ -127,7 +135,11 @@ function loadQuiz(quizName) {
         if (questionObject["mandatory"]) {
           let mandatoryBadge = document.createElement("span");
           mandatoryBadge.setAttribute("class", "badge text-bg-info");
+          if (showCorrect) {
+            mandatoryBadge.setAttribute("class", "badge text-bg-success");
+          }
           mandatoryBadge.innerText = "Required";
+          ("k");
           // qTitle.appendChild(document.createElement("br"));
           qTitle.appendChild(mandatoryBadge);
         }
@@ -149,6 +161,12 @@ function loadQuiz(quizName) {
             qInput.setAttribute("name", `q${qNum}`);
             qInput.setAttribute("class", "form-check-input");
             qInput.setAttribute("type", "radio");
+            if (showCorrect) {
+              if (questionObject["correct_answer"] == f) {
+                qInput.checked = true;
+              }
+              qInput.setAttribute("disabled", "");
+            }
 
             let qLabel = document.createElement("label");
 
@@ -178,6 +196,13 @@ function loadQuiz(quizName) {
             qInput.setAttribute("class", "form-check-input");
             qInput.setAttribute("type", "checkbox");
 
+            if (showCorrect) {
+              if (questionObject["correct_answer"].includes(f)) {
+                qInput.checked = true;
+              }
+              qInput.setAttribute("disabled", "");
+            }
+
             let qLabel = document.createElement("label");
 
             qLabel.setAttribute("for", `q${qNum}`);
@@ -189,6 +214,7 @@ function loadQuiz(quizName) {
             questionContainer.appendChild(checkContainer);
           }
         }
+
         if (questionObject["type"] == "free_text") {
           let qInput = document.createElement("input");
           let checkContainer = document.createElement("div");
@@ -201,6 +227,10 @@ function loadQuiz(quizName) {
           qInput.setAttribute("name", `q${qNum}`);
           qInput.setAttribute("class", "form-control");
           qInput.setAttribute("type", "text");
+          if (showCorrect) {
+            qInput.value = questionObject["correct_answer"];
+            qInput.setAttribute("disabled", "");
+          }
 
           let qLabel = document.createElement("label");
 
@@ -217,6 +247,17 @@ function loadQuiz(quizName) {
         document.getElementById("quiz").appendChild(questionContainer);
       }
 
+      if (showCorrect) {
+        let nextBtn = document.createElement("a");
+        nextBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
+        nextBtn.setAttribute("id", "nextBtn");
+        // nextBtn.addEventListener("click", finishQuiz);
+        nextBtn.innerText = "Take another quiz";
+        nextBtn.href = "index.html";
+
+        document.getElementById("quiz").appendChild(nextBtn);
+        return;
+      }
       let finishBtn = document.createElement("button");
       finishBtn.innerText = "Finish Quiz";
       finishBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
@@ -266,7 +307,6 @@ function finishQuiz(event) {
 
         if (questionObject["mandatory"]) {
           let badge = document.getElementsByClassName("badge")[b];
-          console.log(ans);
           if (ans == "" || ans == []) {
             badge.setAttribute("class", "badge text-bg-danger");
 
@@ -274,14 +314,56 @@ function finishQuiz(event) {
               badge.scrollIntoView();
               requiredNotFound = false;
             }
-            // console.log(badge);
           } else {
             badge.setAttribute("class", "badge text-bg-info");
-            console.log(badge);
           }
           b++;
         }
-        // console.log(ans);
+        if (ans != "" && ans != []) {
+          let correct = questionObject["correct_answer"];
+
+          if (
+            JSON.stringify([correct]) === JSON.stringify(ans) ||
+            JSON.stringify(correct) === JSON.stringify(ans)
+          ) {
+            quizResults[qNum] = true;
+          } else {
+            quizResults[qNum] = false;
+          }
+        } else {
+          quizResults[qNum] = false;
+        }
       }
+      if (!requiredNotFound) {
+        return;
+      }
+
+      loadResults(quizResults);
     });
+}
+
+function loadResults(resultsObj) {
+  let quizName = getQueryVariable("quiz");
+
+  document.getElementById("resultSubtitle").innerText =
+    `The results from taking quiz: ${capitalize(quizName)}`;
+  let questionCount = Object.keys(resultsObj).length;
+  let trueCount = Object.values(resultsObj).reduce(
+    (count, value) => count + (value ? 1 : 0),
+    0,
+  );
+  let scorePercentage = Math.round((trueCount / questionCount) * 100);
+
+  console.log(resultsObj);
+  results.showModal();
+
+  let bar = document.getElementById("progressBar");
+  bar.innerText = bar.style["width"] = scorePercentage + "%";
+
+  document.getElementById("backToQuiz").addEventListener("click", hideResults);
+}
+
+function hideResults(event) {
+  event.preventDefault();
+  results.close();
 }
