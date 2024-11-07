@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Lab 2</title>
+	<link rel="icon" type="image/x-icon" href="./assets/favicon.ico">
+	<link rel="stylesheet" href="style.css">
+	<script src="main.js"></script>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body>
+	<div id="background"></div>
+	<div id="userMenu">
+		<h1 id="userInitials">JB</h1>
+	</div>
+	<dialog id="signin">
+		<div class="card-body">
+			<h5 class="card-title">Sign In</h5>
+			<h6 class="card-subtitle mb-2 text-muted">You need to sign in to take quizzes</h6>
+			<br>
+			<form class="container" id="signInForm">
+			    <div class="form-group row">
+					<div class="col-sm">
+						<label for="inputFirstname">Firstname:</label>
+						<input type="text" class="form-control" id="inputFirstname" aria-describedby="emailHelp" placeholder="Enter Firstname">
+					</div>
+					<br>
+					<div class="col-sm">
+						<label for="inputLastname">Lastname:</label>
+						<input type="text" class="form-control" id="inputLastname" placeholder="Enter Lastname">
+					</div>
+				</div>
+				<br>
+				<div class="form-group">
+					<label for="inputEmail">Email address</label>
+					<input type="email" class="form-control" id="inputEmail" placeholder="Enter email">
+				</div>
+				<br>
+				<button class="btn btn-primary" id="submitSignIn">Submit</button>
+			<form>
+		</div>
+	</dialog>
+
+	<main id="main">
+		<div id="quizCreator">
+			<div id="title">
+				<h4 class="card-title">QuizCreator</h4>
+				<h5 class="card-subtitle mb-2 text-muted">Create your own Quiz</h5>
+			</div>
+			<form id="creatorForm">
+				<div class="mb-3">
+					<label for="nameInput" class="form-label">Quiz Name</label>
+					<input type="text" class="form-control" id="nameInput" placeholder="My Quiz Name">
+				</div>
+				<div class="mb-3">
+					<label for="descInput" class="form-label">Quiz Description</label>
+					<textarea class="form-control" id="descInput" rows="3"></textarea>
+				</div>
+				<div class="mb-3">
+					<label for="linkInput" class="form-label">Image Link</label>
+					<input type="text" class="form-control" id="linkInput" placeholder="https://my.image.link/bla/bla">
+				</div>
+				<br>
+				<hr>
+				<br>
+				<div id="questions"></div>
+			</form>
+			<button id="addQ" type="button" class="btn btn-secondary">Add Question</button>
+			<button type="button" class="btn btn-primary" onclick="alert('Save functionality not implemented yet')">Save Quiz</button>
+		</div>
+
+	</main>
+</body>
+</html>

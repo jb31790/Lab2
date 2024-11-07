@@ -51,6 +51,9 @@ document.addEventListener("DOMContentLoaded", () => {
   if (window.location.pathname.includes("/index.html")) {
     loadSelector();
   }
+  if (window.location.pathname.includes("/quizCreator.html")) {
+    loadCreator();
+  }
 });
 
 function verifyFormField(field, regex, answer) {
@@ -402,6 +405,12 @@ function loadSelector() {
       imgLink:
         "https://cdn.pixabay.com/photo/2017/02/27/20/31/penguin-2104173_640.jpg",
     },
+    {
+      name: "Create New Quiz",
+      description: "Create Your Own Quiz",
+      imgLink:
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.wxkLJWWdTXudrfvhJbf6LAHaHa%26pid%3DApi&f=1&ipt=7bae420bdae14c166031c0940555280dcf18578525c7ec5cf87733355d372db2&ipo=images",
+    },
   ];
 
   for (let i = 0; i < presetQuizzes.length; i++) {
@@ -435,9 +444,34 @@ function loadSelector() {
       `quizPlayer.html?quiz=${presetQuizzes[i]["name"]}`,
     );
     btn.innerText = "Take Quiz";
+
+    if (presetQuizzes[i]["name"] == "Create New Quiz") {
+      btn.innerText = "Create Quiz";
+      btn.setAttribute("href", "quizCreator.html");
+    }
     body.appendChild(btn);
 
     card.appendChild(body);
     content.appendChild(card);
   }
+}
+
+function loadCreator() {
+  setCookie("q", 0, 100);
+  document.getElementById("addQ").addEventListener("click", function () {
+    let form = document.getElementById("questions");
+
+    let questionContainer = document.createElement("div");
+    questionContainer.className = "form-group";
+
+    let qTitle = document.createElement("h5");
+    qNum = getCookie("q");
+    qTitle.innerText = `Question ${qNum}`;
+    qNum++;
+    setCookie("q", qNum, 100);
+
+    questionContainer.appendChild(qTitle);
+    questionContainer.appendChild(document.createElement("hr"));
+    form.appendChild(questionContainer);
+  });
 }
