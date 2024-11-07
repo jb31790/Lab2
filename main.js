@@ -42,6 +42,19 @@ document.addEventListener("DOMContentLoaded", () => {
       .addEventListener("submit", submitSignIn);
   }
 
+  let array = ["penguins", "banana", "javascript"];
+
+  for (let i = 0; i < array.length; i++) {
+    const name = array[i];
+    if (!localStorage.getItem(`quiz-${name}`)) {
+      fetch(`quizzes/quiz_${name}.json`)
+        .then((response) => response.json())
+        .then((data) => {
+          localStorage.setItem(`quiz-${name}`, JSON.stringify(data));
+        });
+    }
+  }
+
   if (window.location.pathname.includes("/quizPlayer.html")) {
     let quizName = getQueryVariable("quiz");
     let showCorrect = getQueryVariable("showCorrect");
@@ -118,160 +131,155 @@ function loadQuiz(quizName, showCorrect) {
     showCorrect = false;
   }
 
-  fetch(`quizzes/quiz_${quizName}.json`)
-    .then((response) => response.json())
-    .then((data) => {
-      quiz = JSON.stringify(data);
-      quiz = data;
+  quiz = JSON.parse(localStorage.getItem(`quiz-${quizName}`));
 
-      document.getElementById("quizName").innerText =
-        `Taking Quiz: ${capitalize(quizName)}`;
+  document.getElementById("quizName").innerText =
+    `Taking Quiz: ${capitalize(quizName)}`;
 
-      for (let i = 0; i < quiz["questions"].length; i++) {
-        let questionObject = quiz["questions"][i];
-        let question = questionObject["question"];
-        let qNum = i + 1;
+  for (let i = 0; i < quiz["questions"].length; i++) {
+    let questionObject = quiz["questions"][i];
+    let question = questionObject["question"];
+    let qNum = i + 1;
 
-        let questionContainer = document.createElement("div");
-        questionContainer.className = "form-group";
-        let qTitle = document.createElement("h5");
-        qTitle.innerText = `Question ${qNum}: ${question} `;
-        // qTitle.setAttribute("for", `q${qNum}`);
+    let questionContainer = document.createElement("div");
+    questionContainer.className = "form-group";
+    let qTitle = document.createElement("h5");
+    qTitle.innerText = `Question ${qNum}: ${question} `;
+    // qTitle.setAttribute("for", `q${qNum}`);
 
-        if (questionObject["mandatory"]) {
-          let mandatoryBadge = document.createElement("span");
-          mandatoryBadge.setAttribute("class", "badge text-bg-info");
-          if (showCorrect) {
-            mandatoryBadge.setAttribute("class", "badge text-bg-success");
-          }
-          mandatoryBadge.innerText = "Required";
-          ("k");
-          // qTitle.appendChild(document.createElement("br"));
-          qTitle.appendChild(mandatoryBadge);
-        }
-
-        questionContainer.appendChild(qTitle);
-
-        if (questionObject["type"] == "single_choice") {
-          let options = questionObject["options"];
-
-          for (let f = 0; f < options.length; f++) {
-            let qInput = document.createElement("input");
-            let checkContainer = document.createElement("div");
-            checkContainer.className = "form-check form-group";
-
-            let qTitle = document.createElement("label");
-            qTitle.innerText = `Question ${qNum}: ${question}`;
-
-            qInput.setAttribute("id", `q${qNum}`);
-            qInput.setAttribute("name", `q${qNum}`);
-            qInput.setAttribute("class", "form-check-input");
-            qInput.setAttribute("type", "radio");
-            if (showCorrect) {
-              if (questionObject["correct_answer"] == f) {
-                qInput.checked = true;
-              }
-              qInput.setAttribute("disabled", "");
-            }
-
-            let qLabel = document.createElement("label");
-
-            qLabel.setAttribute("for", `q${qNum}`);
-            qLabel.setAttribute("class", "form-check-label");
-            qLabel.innerText = options[f];
-            checkContainer.appendChild(qInput);
-            checkContainer.appendChild(qLabel);
-
-            questionContainer.appendChild(checkContainer);
-          }
-        }
-
-        if (questionObject["type"] == "multiple_choice") {
-          let options = questionObject["options"];
-
-          for (let f = 0; f < options.length; f++) {
-            let qInput = document.createElement("input");
-            let checkContainer = document.createElement("div");
-            checkContainer.className = "form-check form-group";
-
-            let qTitle = document.createElement("label");
-            qTitle.innerText = `Question ${qNum}: ${question}`;
-
-            qInput.setAttribute("id", `q${qNum}`);
-            qInput.setAttribute("name", `q${qNum}`);
-            qInput.setAttribute("class", "form-check-input");
-            qInput.setAttribute("type", "checkbox");
-
-            if (showCorrect) {
-              if (questionObject["correct_answer"].includes(f)) {
-                qInput.checked = true;
-              }
-              qInput.setAttribute("disabled", "");
-            }
-
-            let qLabel = document.createElement("label");
-
-            qLabel.setAttribute("for", `q${qNum}`);
-            qLabel.setAttribute("class", "form-check-label");
-            qLabel.innerText = options[f];
-            checkContainer.appendChild(qInput);
-            checkContainer.appendChild(qLabel);
-
-            questionContainer.appendChild(checkContainer);
-          }
-        }
-
-        if (questionObject["type"] == "free_text") {
-          let qInput = document.createElement("input");
-          let checkContainer = document.createElement("div");
-          checkContainer.className = "form-group";
-
-          let qTitle = document.createElement("label");
-          qTitle.innerText = `Question ${qNum}: ${question}`;
-
-          qInput.setAttribute("id", `q${qNum}`);
-          qInput.setAttribute("name", `q${qNum}`);
-          qInput.setAttribute("class", "form-control");
-          qInput.setAttribute("type", "text");
-          if (showCorrect) {
-            qInput.value = questionObject["correct_answer"];
-            qInput.setAttribute("disabled", "");
-          }
-
-          let qLabel = document.createElement("label");
-
-          qLabel.setAttribute("for", `q${qNum}`);
-          checkContainer.appendChild(qInput);
-          checkContainer.appendChild(qLabel);
-
-          questionContainer.appendChild(checkContainer);
-        }
-
-        questionContainer.appendChild(document.createElement("br"));
-        questionContainer.appendChild(document.createElement("br"));
-
-        document.getElementById("quiz").appendChild(questionContainer);
-      }
-
+    if (questionObject["mandatory"]) {
+      let mandatoryBadge = document.createElement("span");
+      mandatoryBadge.setAttribute("class", "badge text-bg-info");
       if (showCorrect) {
-        let nextBtn = document.createElement("a");
-        nextBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
-        nextBtn.setAttribute("id", "nextBtn");
-        // nextBtn.addEventListener("click", finishQuiz);
-        nextBtn.innerText = "Take another quiz";
-        nextBtn.href = "index.html";
-
-        document.getElementById("quiz").appendChild(nextBtn);
-        return;
+        mandatoryBadge.setAttribute("class", "badge text-bg-success");
       }
-      let finishBtn = document.createElement("button");
-      finishBtn.innerText = "Finish Quiz";
-      finishBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
-      finishBtn.setAttribute("id", "finishBtn");
-      finishBtn.addEventListener("click", finishQuiz);
+      mandatoryBadge.innerText = "Required";
+      ("k");
+      // qTitle.appendChild(document.createElement("br"));
+      qTitle.appendChild(mandatoryBadge);
+    }
 
-      document.getElementById("quiz").appendChild(finishBtn);
-    });
+    questionContainer.appendChild(qTitle);
+
+    if (questionObject["type"] == "single_choice") {
+      let options = questionObject["options"];
+
+      for (let f = 0; f < options.length; f++) {
+        let qInput = document.createElement("input");
+        let checkContainer = document.createElement("div");
+        checkContainer.className = "form-check form-group";
+
+        let qTitle = document.createElement("label");
+        qTitle.innerText = `Question ${qNum}: ${question}`;
+
+        qInput.setAttribute("id", `q${qNum}`);
+        qInput.setAttribute("name", `q${qNum}`);
+        qInput.setAttribute("class", "form-check-input");
+        qInput.setAttribute("type", "radio");
+        if (showCorrect) {
+          if (questionObject["correct_answer"] == f) {
+            qInput.checked = true;
+          }
+          qInput.setAttribute("disabled", "");
+        }
+
+        let qLabel = document.createElement("label");
+
+        qLabel.setAttribute("for", `q${qNum}`);
+        qLabel.setAttribute("class", "form-check-label");
+        qLabel.innerText = options[f];
+        checkContainer.appendChild(qInput);
+        checkContainer.appendChild(qLabel);
+
+        questionContainer.appendChild(checkContainer);
+      }
+    }
+
+    if (questionObject["type"] == "multiple_choice") {
+      let options = questionObject["options"];
+
+      for (let f = 0; f < options.length; f++) {
+        let qInput = document.createElement("input");
+        let checkContainer = document.createElement("div");
+        checkContainer.className = "form-check form-group";
+
+        let qTitle = document.createElement("label");
+        qTitle.innerText = `Question ${qNum}: ${question}`;
+
+        qInput.setAttribute("id", `q${qNum}`);
+        qInput.setAttribute("name", `q${qNum}`);
+        qInput.setAttribute("class", "form-check-input");
+        qInput.setAttribute("type", "checkbox");
+
+        if (showCorrect) {
+          if (questionObject["correct_answer"].includes(f)) {
+            qInput.checked = true;
+          }
+          qInput.setAttribute("disabled", "");
+        }
+
+        let qLabel = document.createElement("label");
+
+        qLabel.setAttribute("for", `q${qNum}`);
+        qLabel.setAttribute("class", "form-check-label");
+        qLabel.innerText = options[f];
+        checkContainer.appendChild(qInput);
+        checkContainer.appendChild(qLabel);
+
+        questionContainer.appendChild(checkContainer);
+      }
+    }
+
+    if (questionObject["type"] == "free_text") {
+      let qInput = document.createElement("input");
+      let checkContainer = document.createElement("div");
+      checkContainer.className = "form-group";
+
+      let qTitle = document.createElement("label");
+      qTitle.innerText = `Question ${qNum}: ${question}`;
+
+      qInput.setAttribute("id", `q${qNum}`);
+      qInput.setAttribute("name", `q${qNum}`);
+      qInput.setAttribute("class", "form-control");
+      qInput.setAttribute("type", "text");
+      if (showCorrect) {
+        qInput.value = questionObject["correct_answer"];
+        qInput.setAttribute("disabled", "");
+      }
+
+      let qLabel = document.createElement("label");
+
+      qLabel.setAttribute("for", `q${qNum}`);
+      checkContainer.appendChild(qInput);
+      checkContainer.appendChild(qLabel);
+
+      questionContainer.appendChild(checkContainer);
+    }
+
+    questionContainer.appendChild(document.createElement("br"));
+    questionContainer.appendChild(document.createElement("br"));
+
+    document.getElementById("quiz").appendChild(questionContainer);
+  }
+
+  if (showCorrect) {
+    let nextBtn = document.createElement("a");
+    nextBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
+    nextBtn.setAttribute("id", "nextBtn");
+    // nextBtn.addEventListener("click", finishQuiz);
+    nextBtn.innerText = "Take another quiz";
+    nextBtn.href = "index.html";
+
+    document.getElementById("quiz").appendChild(nextBtn);
+    return;
+  }
+  let finishBtn = document.createElement("button");
+  finishBtn.innerText = "Finish Quiz";
+  finishBtn.setAttribute("class", "btn btn-primary btn-lg btn-block");
+  finishBtn.setAttribute("id", "finishBtn");
+  finishBtn.addEventListener("click", finishQuiz);
+
+  document.getElementById("quiz").appendChild(finishBtn);
 }
 
 function finishQuiz(event) {
@@ -279,72 +287,67 @@ function finishQuiz(event) {
 
   let quizName = getQueryVariable("quiz");
 
-  fetch(`quizzes/quiz_${quizName}.json`)
-    .then((response) => response.json())
-    .then((data) => {
-      quiz = JSON.stringify(data);
-      quiz = data;
+  quiz = JSON.parse(localStorage.getItem(`quiz-${quizName}`));
 
-      let quizResults = new Object();
-      let b = 0;
-      let requiredNotFound = true;
+  let quizResults = new Object();
+  let b = 0;
+  let requiredNotFound = true;
 
-      for (let i = 0; i < quiz["questions"].length; i++) {
-        let questionObject = quiz["questions"][i];
-        let qNum = i + 1;
+  for (let i = 0; i < quiz["questions"].length; i++) {
+    let questionObject = quiz["questions"][i];
+    let qNum = i + 1;
 
-        let ans = [];
+    let ans = [];
 
-        let quizAnswerNode = document.querySelectorAll(`[name="q${qNum}"]`);
+    let quizAnswerNode = document.querySelectorAll(`[name="q${qNum}"]`);
 
-        for (let f = 0; f < quizAnswerNode.length; f++) {
-          let val = quizAnswerNode[f].value;
+    for (let f = 0; f < quizAnswerNode.length; f++) {
+      let val = quizAnswerNode[f].value;
 
-          if (val == "on") {
-            if (quizAnswerNode[f].checked) {
-              val = f;
-            } else {
-              continue;
-            }
-          }
-          ans.push(val);
-        }
-
-        if (questionObject["mandatory"]) {
-          let badge = document.getElementsByClassName("badge")[b];
-          if (ans == "" || ans == []) {
-            badge.setAttribute("class", "badge text-bg-danger");
-
-            if (requiredNotFound) {
-              badge.scrollIntoView();
-              requiredNotFound = false;
-            }
-          } else {
-            badge.setAttribute("class", "badge text-bg-info");
-          }
-          b++;
-        }
-        if (ans != "" && ans != []) {
-          let correct = questionObject["correct_answer"];
-
-          if (
-            JSON.stringify([correct]) === JSON.stringify(ans) ||
-            JSON.stringify(correct) === JSON.stringify(ans)
-          ) {
-            quizResults[qNum] = true;
-          } else {
-            quizResults[qNum] = false;
-          }
+      if (val == "on") {
+        if (quizAnswerNode[f].checked) {
+          val = f;
         } else {
-          quizResults[qNum] = false;
+          continue;
         }
       }
-      if (!requiredNotFound) {
-        return;
-      }
+      ans.push(val);
+    }
 
-      loadResults(quizResults);
-    });
+    if (questionObject["mandatory"]) {
+      let badge = document.getElementsByClassName("badge")[b];
+      if (ans == "" || ans == []) {
+        badge.setAttribute("class", "badge text-bg-danger");
+
+        if (requiredNotFound) {
+          badge.scrollIntoView();
+          requiredNotFound = false;
+        }
+      } else {
+        badge.setAttribute("class", "badge text-bg-info");
+      }
+      b++;
+    }
+    if (ans != "" && ans != []) {
+      let correct = questionObject["correct_answer"];
+
+      if (
+        JSON.stringify([correct]) === JSON.stringify(ans) ||
+        JSON.stringify(correct) === JSON.stringify(ans)
+      ) {
+        quizResults[qNum] = true;
+      } else {
+        quizResults[qNum] = false;
+      }
+    } else {
+      quizResults[qNum] = false;
+    }
+  }
+  if (!requiredNotFound) {
+    return;
+  }
+
+  loadResults(quizResults);
 }
 
 function loadResults(resultsObj) {
