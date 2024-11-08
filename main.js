@@ -165,13 +165,13 @@ function loadQuiz(quizName, showCorrect) {
       let options = questionObject["options"];
 
       for (let f = 0; f < options.length; f++) {
-        let qInput = document.createElement("input");
         let checkContainer = document.createElement("div");
         checkContainer.className = "form-check form-group";
 
         let qTitle = document.createElement("label");
         qTitle.innerText = `Question ${qNum}: ${question}`;
 
+        let qInput = document.createElement("input");
         qInput.setAttribute("id", `q${qNum}`);
         qInput.setAttribute("name", `q${qNum}`);
         qInput.setAttribute("class", "form-check-input");
@@ -389,40 +389,48 @@ function showCorrectAnswers(event) {
 function loadSelector() {
   let content = document.getElementById("content");
 
-  let presetQuizzes = [
-    {
+  let presetQuizzes = {
+    javascript: {
       name: "javascript",
       description: "Test your javascript-knowledge in this wonderful quiz",
       imgLink:
         "https://cdn.pixabay.com/photo/2016/03/27/18/54/technology-1283624_1280.jpg",
     },
-    {
+    banana: {
       name: "banana",
       description: "How much do you know about this yellow'n'yummy fruit?",
       imgLink:
         "https://cdn.pixabay.com/photo/2017/01/03/11/25/banana-1949166_640.jpg",
     },
-    {
+    penguins: {
       name: "penguins",
       description: "They're cute, flightless birds. That's all I know...",
       imgLink:
         "https://cdn.pixabay.com/photo/2017/02/27/20/31/penguin-2104173_640.jpg",
     },
-    {
+    create: {
       name: "Create New Quiz",
       description: "Create Your Own Quiz",
       imgLink:
         "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse1.mm.bing.net%2Fth%3Fid%3DOIP.wxkLJWWdTXudrfvhJbf6LAHaHa%26pid%3DApi&f=1&ipt=7bae420bdae14c166031c0940555280dcf18578525c7ec5cf87733355d372db2&ipo=images",
     },
-  ];
+  };
 
-  for (let i = 0; i < presetQuizzes.length; i++) {
+  let quizMetadata = JSON.parse(localStorage.getItem("quizMetadata"));
+
+  if (quizMetadata == null) {
+    quizMetadata = presetQuizzes;
+    localStorage.setItem("quizMetadata", JSON.stringify(quizMetadata));
+  }
+  quizMetadata = Object.values(quizMetadata);
+
+  for (let i = 0; i < quizMetadata.length; i++) {
     let card = document.createElement("div");
     card.setAttribute("class", "card");
     card.style["width"] = "18rem";
 
     let img = document.createElement("img");
-    let imgLink = presetQuizzes[i]["imgLink"];
+    let imgLink = quizMetadata[i]["imgLink"];
     img.setAttribute("src", imgLink);
     img.setAttribute("class", "card-img-top");
     card.appendChild(img);
@@ -432,27 +440,40 @@ function loadSelector() {
 
     let title = document.createElement("h5");
     title.setAttribute("class", "card-title");
-    title.innerText = capitalize(presetQuizzes[i]["name"]);
+    title.innerText = capitalize(quizMetadata[i]["name"]);
     body.appendChild(title);
 
     let p = document.createElement("p");
     p.setAttribute("class", "card-text");
-    p.innerText = capitalize(presetQuizzes[i]["description"]);
+    p.innerText = capitalize(quizMetadata[i]["description"]);
     body.appendChild(p);
 
     let btn = document.createElement("a");
     btn.setAttribute("class", "btn btn-primary");
-    btn.setAttribute(
-      "href",
-      `quizPlayer.html?quiz=${presetQuizzes[i]["name"]}`,
-    );
+    btn.setAttribute("href", `quizPlayer.html?quiz=${quizMetadata[i]["name"]}`);
     btn.innerText = "Take Quiz";
 
-    if (presetQuizzes[i]["name"] == "Create New Quiz") {
+    if (quizMetadata[i]["name"] == "Create New Quiz") {
       btn.innerText = "Create Quiz";
       btn.setAttribute("href", "quizCreator.html");
     }
     body.appendChild(btn);
+
+    let editBtn = document.createElement("a");
+    editBtn.setAttribute("class", "btn btn-secondary");
+    editBtn.style["margin-left"] = "0.5em";
+    editBtn.setAttribute(
+      "href",
+      `quizCreator.html?edit=${quizMetadata[i]["name"]}`,
+    );
+    editBtn.innerText = "Edit Quiz";
+
+    if (quizMetadata[i]["name"] == "Create New Quiz") {
+      editBtn.innerText = "Create Quiz";
+      editBtn.setAttribute("href", "quizCreator.html");
+    } else {
+      body.appendChild(editBtn);
+    }
 
     card.appendChild(body);
     content.appendChild(card);
@@ -461,20 +482,197 @@ function loadSelector() {
 
 function loadCreator() {
   setCookie("q", 0, 100);
+
+  let allQuizMetadata = JSON.parse(localStorage.getItem("quizMetadata"));
+
+  const quizName = getQueryVariable("edit");
+
+  if (Object.keys(localStorage).includes(`quiz-${quizName}`)) {
+    let quiz = JSON.parse(localStorage.getItem(`quiz-${quizName}`));
+    let questions = quiz.questions;
+    let form = document.getElementById("questions");
+
+    let thisQuizMetadata = allQuizMetadata[quizName];
+    document.getElementById("nameInput").value = thisQuizMetadata.name;
+    document.getElementById("descInput").value = thisQuizMetadata.description;
+    document.getElementById("linkInput").value = thisQuizMetadata.imgLink;
+
+    for (let i = 0; i < questions.length; i++) {
+      let questionContainer = document.createElement("div");
+      questionContainer.setAttribute("class", "form-group question");
+
+      let qTitle = document.createElement("h5");
+      qNum = getCookie("q");
+      qTitle.innerText = `Question ${qNum}`;
+      qNum++;
+      setCookie("q", qNum, 100);
+
+      let qContent = document.createElement("div");
+      qContent.setAttribute("class", "mb-3");
+
+      let qNameLabel = document.createElement("label");
+      qNameLabel.setAttribute("class", "form-label");
+      qNameLabel.setAttribute("for", `q${qNum}`);
+      qNameLabel.innerText = "Question:";
+      qContent.appendChild(qNameLabel);
+
+      let qNameInput = document.createElement("input");
+      qNameInput.setAttribute("class", "form-control");
+      qNameInput.setAttribute("type", "text");
+      qNameInput.setAttribute("id", `q${qNum}`);
+      qNameInput.value = questions[i]["question"];
+      qContent.appendChild(qNameInput);
+
+      let qMandatoryInput = document.createElement("input");
+      qMandatoryInput.setAttribute("id", `q${qNum}-mandatory`);
+      qMandatoryInput.setAttribute("name", `q${qNum}-mandatory`);
+      qMandatoryInput.setAttribute("class", "form-check-input");
+      qMandatoryInput.setAttribute("type", "checkbox");
+      qMandatoryInput.checked = questions[i]["mandatory"];
+      qContent.appendChild(qMandatoryInput);
+
+      let qMandatoryLabel = document.createElement("label");
+      qMandatoryLabel.setAttribute("for", `q${qNum}-mandatory`);
+      qMandatoryLabel.setAttribute("class", "form-check-label");
+      qMandatoryLabel.innerText = " Required Question";
+      qContent.appendChild(qMandatoryLabel);
+
+      questionContainer.appendChild(qTitle);
+      questionContainer.appendChild(qContent);
+      questionContainer.appendChild(document.createElement("br"));
+      form.appendChild(questionContainer);
+    }
+  }
+
+  if (quizName != "edit") {
+    let delBtn = document.createElement("button");
+    delBtn.setAttribute("class", "btn btn-danger");
+    delBtn.setAttribute("type", "button");
+    delBtn.innerText = "Delete Quiz";
+    delBtn.addEventListener("click", deleteQuiz);
+    document.getElementById("quizCreator").appendChild(delBtn);
+  }
+
+  document.getElementById("saveQuiz").addEventListener("click", saveQuiz);
   document.getElementById("addQ").addEventListener("click", function () {
     let form = document.getElementById("questions");
 
     let questionContainer = document.createElement("div");
-    questionContainer.className = "form-group";
+    questionContainer.setAttribute("class", "form-group question");
 
     let qTitle = document.createElement("h5");
     qNum = getCookie("q");
     qTitle.innerText = `Question ${qNum}`;
+    questionContainer.appendChild(qTitle);
+
     qNum++;
     setCookie("q", qNum, 100);
 
-    questionContainer.appendChild(qTitle);
+    let qContent = document.createElement("div");
+    qContent.setAttribute("class", "mb-3");
+
+    let qNameLabel = document.createElement("label");
+    qNameLabel.setAttribute("class", "form-label");
+    qNameLabel.setAttribute("for", `q${qNum}`);
+    qNameLabel.innerText = "Question:";
+    qContent.appendChild(qNameLabel);
+
+    let qNameInput = document.createElement("input");
+    qNameInput.setAttribute("class", "form-control");
+    qNameInput.setAttribute("type", "text");
+    qNameInput.setAttribute("id", `q${qNum}`);
+    qContent.appendChild(qNameInput);
+
+    let qMandatoryInput = document.createElement("input");
+    qMandatoryInput.setAttribute("id", `q${qNum}-mandatory`);
+    qMandatoryInput.setAttribute("name", `q${qNum}-mandatory`);
+    qMandatoryInput.setAttribute("class", "form-check-input");
+    qMandatoryInput.setAttribute("type", "checkbox");
+    qContent.appendChild(qMandatoryInput);
+
+    let qMandatoryLabel = document.createElement("label");
+    qMandatoryLabel.setAttribute("for", `q${qNum}-mandatory`);
+    qMandatoryLabel.setAttribute("class", "form-check-label");
+    qMandatoryLabel.innerText = " Required Question";
+    qContent.appendChild(qMandatoryLabel);
+
+    questionContainer.appendChild(qContent);
+    questionContainer.appendChild(document.createElement("br"));
+    form.appendChild(questionContainer);
+
     questionContainer.appendChild(document.createElement("hr"));
     form.appendChild(questionContainer);
   });
+}
+
+function saveQuiz() {
+  let allQuizMetadata = JSON.parse(localStorage.getItem("quizMetadata"));
+  const quizName = document.getElementById("nameInput").value;
+
+  // if (Object.keys(allQuizMetadata).includes(quizName)) {
+  if (false) {
+    alert("hehe");
+    let newQuizMetadata = structuredClone(allQuizMetadata[quizName]);
+    delete allQuizMetadata[quizName];
+
+    newQuizMetadata.name = document.getElementById("nameInput").value;
+    newQuizMetadata.description = document.getElementById("descInput").value;
+    newQuizMetadata.imgLink = document.getElementById("linkInput").value;
+
+    allQuizMetadata[quizName] = newQuizMetadata;
+    localStorage.setItem("quizMetadata", JSON.stringify(allQuizMetadata));
+  } else {
+    let newQuizMetadata = {};
+    let nameInput = document.getElementById("nameInput");
+    let descInput = document.getElementById("descInput");
+    let linkInput = document.getElementById("linkInput");
+
+    let nameRE = new RegExp("[a-zA-ZåäöÅÄÖ0-9_-]+");
+
+    if (!verifyFormField(nameInput, nameRE, "Invalid name")) {
+      return;
+    }
+
+    if (descInput.value == "") {
+      descInput.value = " ";
+    }
+
+    if (linkInput.value == "") {
+      linkInput.value =
+        "https://external-content.duckduckgo.com/iu/?u=https%3A%2F%2Ftse3.mm.bing.net%2Fth%3Fid%3DOIP.3JpFam4YU6Ki1Yn7QYsa7AHaHa%26pid%3DApi&f=1&ipt=4aa1cd5be8e5f2b4073e2abc0d4008d3a52f563b3c25c26ca604a188d2fe119d&ipo=images";
+    }
+
+    newQuizMetadata.name = nameInput.value;
+    newQuizMetadata.description = descInput.value;
+    newQuizMetadata.imgLink = linkInput.value;
+    allQuizMetadata[nameInput.value] = newQuizMetadata;
+
+    localStorage.setItem("quizMetadata", JSON.stringify(allQuizMetadata));
+
+    localStorage.setItem(
+      `quiz-${nameInput.value}`,
+      JSON.stringify({ questions: [] }),
+    );
+  }
+
+  let quiz = { questions: [] };
+  let questions = quiz.questions;
+  let formQuestions = document.getElementsByClassName("question");
+
+  // for (let i = 0; i < array.length; i++) {
+  //   // const element = array[index];
+  // }
+  window.location.replace("index.html");
+}
+
+function deleteQuiz() {
+  let allQuizMetadata = JSON.parse(localStorage.getItem("quizMetadata"));
+  let quizName = getQueryVariable("edit");
+
+  delete allQuizMetadata[quizName];
+
+  localStorage.setItem("quizMetadata", JSON.stringify(allQuizMetadata));
+
+  console.log(localStorage.getItem("quizMetadata"));
+  window.location.replace("index.html");
 }
