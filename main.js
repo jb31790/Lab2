@@ -60,12 +60,12 @@ document.addEventListener("DOMContentLoaded", () => {
     let showCorrect = getQueryVariable("showCorrect");
 
     loadQuiz(quizName, showCorrect);
-  }
-  if (window.location.pathname.includes("/index.html")) {
+  } else if (window.location.pathname.includes("/index.html")) {
     loadSelector();
-  }
-  if (window.location.pathname.includes("/quizCreator.html")) {
+  } else if (window.location.pathname.includes("/quizCreator.html")) {
     loadCreator();
+  } else {
+    window.location.replace("index.html");
   }
 });
 
