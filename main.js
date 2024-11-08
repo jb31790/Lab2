@@ -564,6 +564,8 @@ function loadCreator() {
       sel.addEventListener("change", function (event) {
         let selId = event.target.getAttribute("id");
         let sel = document.getElementById(selId);
+        // sel.style["border"] =
+        //   "var(--bs-border-width) solid var(--bs-border-color)";
         selId = selId.split("-")[0];
         let qNum = Number(selId.substring(1, selId.length));
         let questionContainer = document.getElementById(`q${qNum}-qc`);
@@ -639,6 +641,8 @@ function loadCreator() {
       qNum++;
       setCookie("q", qNum, 100);
     }
+    qNum++;
+    setCookie("q", qNum, 100);
   }
 
   if (quizName != "edit") {
@@ -653,17 +657,14 @@ function loadCreator() {
   document.getElementById("saveQuiz").addEventListener("click", saveQuiz);
   document.getElementById("addQ").addEventListener("click", function () {
     let form = document.getElementById("questions");
-
     let questionContainer = document.createElement("div");
+
+    qNum = getCookie("q");
     questionContainer.setAttribute("class", "form-group question");
+    questionContainer.setAttribute("id", `q${qNum}-qc`);
 
     let qTitle = document.createElement("h5");
-    qNum = getCookie("q");
-    qTitle.innerText = `Question ${qNum}`;
-    questionContainer.appendChild(qTitle);
-
-    qNum++;
-    setCookie("q", qNum, 100);
+    qTitle.innerText = `Question ${Number(qNum) + 1}`;
 
     let qContent = document.createElement("div");
     qContent.setAttribute("class", "mb-3");
@@ -674,12 +675,12 @@ function loadCreator() {
     qNameLabel.innerText = "Question:";
     qContent.appendChild(qNameLabel);
 
-    let qNameInput = document.createElement("input");
+    let qNameInput = document.createElement("textarea");
     qNameInput.setAttribute("class", "form-control");
     qNameInput.setAttribute("type", "text");
-    qNameInput.setAttribute("id", `q${qNum}`);
-    qNameInput.style["margin-bottom"] = "1em";
+    qNameInput.setAttribute("id", `q${qNum}-question`);
     qContent.appendChild(qNameInput);
+    qNameInput.style["margin-bottom"] = "1em";
 
     let qMandatoryInput = document.createElement("input");
     qMandatoryInput.setAttribute("id", `q${qNum}-mandatory`);
@@ -695,13 +696,103 @@ function loadCreator() {
     qMandatoryLabel.innerText = " Required Question";
     qContent.appendChild(qMandatoryLabel);
 
+    questionContainer.appendChild(qTitle);
     questionContainer.appendChild(qContent);
+
+    let sel = document.createElement("select");
+    sel.setAttribute("class", "form-select");
+    sel.setAttribute("id", `q${qNum}-select`);
+    let firstSelect = document.createElement("option");
+    firstSelect.setAttribute("selected", "");
+    firstSelect.innerText = "Choose Question Type";
+    sel.appendChild(firstSelect);
+    let choices = ["Single Choice", "Multiple Choice", "Free Text"];
+    for (let index = 0; index < choices.length; index++) {
+      let o = document.createElement("option");
+      o.setAttribute("value", index + 1);
+      o.innerText = choices[index];
+      sel.appendChild(o);
+    }
+    questionContainer.appendChild(sel);
+
     questionContainer.appendChild(document.createElement("br"));
     questionContainer.appendChild(document.createElement("br"));
     form.appendChild(questionContainer);
 
-    questionContainer.appendChild(document.createElement("hr"));
-    form.appendChild(questionContainer);
+    sel.addEventListener("change", function (event) {
+      let selId = event.target.getAttribute("id");
+      let sel = document.getElementById(selId);
+      selId = selId.split("-")[0];
+      let qNum = Number(selId.substring(1, selId.length));
+      let questionContainer = document.getElementById(`q${qNum}-qc`);
+
+      let ansContainer = document.getElementById(`q${qNum}-ans`);
+
+      if (ansContainer != null) {
+        ansContainer.remove();
+      }
+      ansContainer = document.createElement("div");
+      questionContainer.appendChild(ansContainer);
+
+      ansContainer.setAttribute("id", `q${qNum}-ans`);
+
+      let choice = sel.options[sel.selectedIndex].text;
+
+      if (choice.split(" ")[1] == "Choice") {
+        let addChoice = document.createElement("button");
+        addChoice.setAttribute("class", "btn btn-primary");
+        addChoice.innerText = "Add Choice";
+        ansContainer.appendChild(addChoice);
+        addChoice.addEventListener("click", function () {
+          let acId = event.target.getAttribute("id");
+          let ac = document.getElementById(selId);
+          acId = selId.split("-")[0];
+          let qNum = Number(selId.substring(1, acId.length));
+
+          let ansContainer = document.getElementById(`q${qNum}-ans`);
+          let ec = document.createElement("div");
+          ec.className = "form-check form-group";
+
+          let sel = document.getElementById(`q${qNum}-select`);
+          let choice = sel.options[sel.selectedIndex].text;
+
+          let aInput = document.createElement("input");
+          aInput.setAttribute("id", `q${qNum}-ai`);
+          aInput.setAttribute("name", `q${qNum}`);
+          aInput.setAttribute("class", `form-check-input q${qNum}-ai`);
+          aInput.setAttribute("type", "checkbox");
+          if (choice.split(" ")[0] == "Single") {
+            aInput.setAttribute("type", "radio");
+          }
+
+          let aLabel = document.createElement("input");
+          aLabel.setAttribute("for", `q${qNum}-ai`);
+          aLabel.setAttribute("class", `form-check-label q${qNum}-albl`);
+          aLabel.setAttribute("placeholder", "Answer");
+
+          ec.appendChild(aInput);
+          ec.appendChild(aLabel);
+
+          ansContainer.appendChild(ec);
+        });
+      } else {
+        let ec = document.createElement("div");
+        ec.className = "form-check form-group";
+
+        let aLabel = document.createElement("input");
+        aLabel.setAttribute("class", "form-control");
+        aLabel.setAttribute("id", `q${qNum}-fta`);
+
+        ec.appendChild(aLabel);
+        ansContainer.appendChild(ec);
+      }
+      ansContainer.appendChild(document.createElement("br"));
+      ansContainer.appendChild(document.createElement("br"));
+      questionContainer.appendChild(document.createElement("br"));
+
+      qNum++;
+      setCookie("q", qNum, 100);
+    });
   });
 }
 
@@ -762,7 +853,11 @@ function saveQuiz() {
     let qNum = qid.substring(1, qid.length);
     let sel = document.getElementById(`q${qNum}-select`);
     let choice = sel.options[sel.selectedIndex].text;
+    console.log(choice);
 
+    if (choice == "Choose Question Type") {
+      sel.style["border"] = " 2px solid red";
+    }
     choice = choice.toLowerCase().split(" ").join("_");
     let answer;
 
@@ -771,9 +866,14 @@ function saveQuiz() {
     answer = [];
     let options = [];
 
+    let nameRE = new RegExp("[a-zA-ZåäöÅÄÖ0-9_-]+");
+
     for (let index = 0; index < optionsLabels.length; index++) {
       const option = optionsLabels[index];
       options.push(option.value);
+      if (!verifyFormField(option, nameRE, "Invalid Input")) {
+        return;
+      }
     }
 
     for (let index = 0; index < optionsInputs.length; index++) {
@@ -785,13 +885,27 @@ function saveQuiz() {
       }
     }
 
+    if (
+      !verifyFormField(
+        document.getElementById(`q${qNum}-question`),
+        nameRE,
+        "Invalid Input",
+      )
+    ) {
+      return;
+    }
+
     questions[i] = {
       question: document.getElementById(`q${qNum}-question`).value,
       type: choice,
     };
 
     if (choice == "free_text") {
+      let field = document.getElementById(`q${qNum}-fta`);
       answer = document.getElementById(`q${qNum}-fta`).value;
+      if (!verifyFormField(field, nameRE, "Invalid Input")) {
+        return;
+      }
     } else {
       questions[i].options = options;
     }
@@ -803,7 +917,7 @@ function saveQuiz() {
   }
 
   localStorage.setItem(`quiz-${quizName}`, JSON.stringify(quiz));
-  window.location.replace("index.html");
+  // window.location.replace("index.html");
 }
 
 function deleteQuiz() {
